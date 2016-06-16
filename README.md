@@ -88,6 +88,7 @@ hello AND 7/11                hello & 7 11                  hello & 7 11        
 @(tag_list) fox tango 7/11    @tag_list fox tango 7 11      @tag_list fox tango 7 11      PASS      
 @(tag_list) AND               @tag_list AND                 @tag_list AND                 PASS      
 @other_field AND              other field AND               other field AND               PASS      
+hello & @other_field AND      hello &  other field AND      hello &  other field AND      PASS      
 ```
 
 
