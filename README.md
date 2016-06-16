@@ -80,6 +80,8 @@ INPUT                         EXPECTED                      RESULT              
 7/11                          7 11                          7 11                          PASS      
 hello 7/11                    hello 7 11                    hello 7 11                    PASS      
 hello OR 7/11                 hello | 7 11                  hello | 7 11                  PASS      
+hello or 7/11                 hello | 7 11                  hello | 7 11                  PASS      
+hello | 7/11                  hello | 7 11                  hello | 7 11                  PASS      
 hello AND 7/11                hello & 7 11                  hello & 7 11                  PASS      
 @tag_list fox tango 7/11      @tag_list fox tango 7 11      @tag_list fox tango 7 11      PASS      
 @(tag_list) fox tango 7/11    @tag_list fox tango 7 11      @tag_list fox tango 7 11      PASS      
