@@ -26,7 +26,8 @@ ghci>
 
 ## Explanation
 
-sphinxesc performs very simple escaping. The abstract syntax tree it recognizes is:
+`escapeSphinxQueryString` performs very simple escaping. The abstract syntax
+tree it builds is:
 
 ```
 data Expression = 
