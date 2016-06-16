@@ -96,23 +96,4 @@ literalStop = (choice [ eof
 literal :: Parser' Expression
 literal = Literal <$> manyTill anyChar (try literalStop)
 
-type Parser = ParsecT String () Identity 
 
-
--- | Escapes extended sphinx query
-escQuery :: String -> String
-escQuery = undefined
-
--- http://sphinxsearch.com/docs/latest/extended-syntax.html
-
-
-
-{-
-escape single quotes?
-@(tag_list) or @tag_list is the only permitted @expr
-
-no trailnig end
-
-eliminate all non alphanum
-
--}
