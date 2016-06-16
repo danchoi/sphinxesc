@@ -91,8 +91,6 @@ literalStop = (choice [ eof
   ])
   <?> "literalStop"
 
--- | consumes all characters until @, |, or end of text, then strips out all non-alphanumerics
--- before returning value
 literal :: Parser' Expression
 literal = Literal <$> manyTill anyChar (try literalStop)
 
