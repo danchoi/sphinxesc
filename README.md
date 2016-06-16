@@ -32,7 +32,7 @@ data Expression =
 
 It does not parse more advanced Sphinx query expressions such as `NEAR/n`,
 quorum, etc., nor does it recognize arbitrary `@field` expressions. All
-non-alpha-numeric expressions are converted into whitespace or filtered out
+non-alpha-numeric characters are converted into whitespace or filtered out
 unless they contribute to an `AND`, `OR` or `@tag_list` field search
 expression. Obviously these rules are quite domain specific. The rules can be
 made more configurable later.
