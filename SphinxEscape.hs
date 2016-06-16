@@ -1,11 +1,16 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards, ScopedTypeVariables, FlexibleContexts #-} 
-
 module SphinxEscape where
 import Control.Applicative
 import Data.Functor.Identity (Identity )
 import Text.Parsec hiding (many, (<|>)) 
 import Data.Char
  
+
+-- Main function
+escapeSphinxQueryString :: String -> String
+escapeSphinxQueryString s = expressionToString . parseQuery $ s
+
+
 -- Just a simplified syntax tree. Besides this, all other input has it's
 -- non-alphanum characters stripped, including double and single quotes and
 -- parentheses
@@ -67,10 +72,10 @@ conjExpr :: Parser' Conj
 conjExpr = andExpr <|> orExpr
 
 andExpr :: Parser' Conj
-andExpr = try (many1 space >> (string "and " <|> string "AND ")) >> return Or
+andExpr = try (many1 space >> (string "and " <|> string "AND ")) >> return And
 
 orExpr :: Parser' Conj
-orExpr = try (many1 space >> (string "or " <|> string "OR ")) >> return And
+orExpr = try (many1 space >> (string "or " <|> string "OR ")) >> return Or
 
 literalStop :: Parser' ()
 literalStop = (choice [ eof
