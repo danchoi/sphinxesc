@@ -47,6 +47,9 @@ and escaping of the input to the final sphinx search expression.
 ```
 $ sphinxesc "test OR hello"
 test | hello
+
+# -p option shows the parsing result
+
 $ sphinxesc -p "test OR hello"
 Or (Literal "test") (Literal "hello")
 ```
