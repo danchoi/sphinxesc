@@ -32,7 +32,7 @@ parseQuery  inp =
 
 -- escapes expression to string to pass to sphinx
 expressionToString :: Expression -> String
-expressionToString (TagFieldSearch s) = "@tag_list " ++ escapeString s
+expressionToString (TagFieldSearch s) = "@tag_list" ++ escapeString s
 expressionToString (Literal s) = escapeString s
 expressionToString (AndOrExpr And a b) = expressionToString a ++ " & " ++ expressionToString b
 expressionToString (AndOrExpr Or a b) = expressionToString a ++ " | " ++ expressionToString b

@@ -22,12 +22,13 @@ library
   hs-source-dirs:      .
   default-language:    Haskell2010
 
-executable sphinxesc-parse
+executable sphinxesc
   build-depends:       base >=4.7 && <4.9
                      , parsec
                      , sphinxesc
+                     , optparse-applicative
   hs-source-dirs:      .
   default-language:    Haskell2010
-  main-is: MainParse.hs
+  main-is: Main.hs
 
  
