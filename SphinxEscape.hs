@@ -51,7 +51,7 @@ type Parser' = ParsecT String () Identity
 
 
 expression :: Parser' Expression
-expression = (try andOrExpr) <|> tagField <|> literal 
+expression = (try andOrExpr) <|> try tagField <|> literal 
 
 tagField :: Parser' Expression
 tagField = do
@@ -63,7 +63,7 @@ tagField = do
 
 andOrExpr :: Parser' Expression
 andOrExpr = do 
-    a <- (tagField <|> literal)
+    a <- (try tagField <|> literal)
     x <- try conjExpr
     b <- expression  -- recursion
     return $ AndOrExpr x a b
