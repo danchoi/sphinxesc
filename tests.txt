@@ -9,3 +9,4 @@ hello AND 7/11             :: hello & 7 11
 @(tag_list) AND            :: @tag_list AND
 @other_field AND           :: other field AND
 hello & @other_field AND   :: hello &  other field AND
+hello &                    :: hello

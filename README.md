@@ -76,7 +76,6 @@ expected escaped output result. To run the tests, execute the script
 ```bash
 ./test.sh
 
-
 INPUT                         EXPECTED                      RESULT                        PASS      
 7/11                          7 11                          7 11                          PASS      
 hello 7/11                    hello 7 11                    hello 7 11                    PASS      
@@ -89,6 +88,7 @@ hello AND 7/11                hello & 7 11                  hello & 7 11        
 @(tag_list) AND               @tag_list AND                 @tag_list AND                 PASS      
 @other_field AND              other field AND               other field AND               PASS      
 hello & @other_field AND      hello &  other field AND      hello &  other field AND      PASS      
+hello &                       hello                         hello                         PASS      
 ```
 
 
