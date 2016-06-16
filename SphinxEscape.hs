@@ -72,10 +72,17 @@ conjExpr :: Parser' Conj
 conjExpr = andExpr <|> orExpr
 
 andExpr :: Parser' Conj
-andExpr = try (many1 space >> (string "and " <|> string "AND ")) >> return And
+andExpr = mkConjExpr ["and", "AND", "&"] And
 
 orExpr :: Parser' Conj
-orExpr = try (many1 space >> (string "or " <|> string "OR ")) >> return Or
+orExpr = mkConjExpr ["or", "OR", "|"] Or
+
+
+mkConjExpr :: [String] -> Conj -> Parser' Conj
+mkConjExpr xs t = 
+    try (many1 space >> choice (map (string . (++" ")) xs))
+    >> return t
+
 
 literalStop :: Parser' ()
 literalStop = (choice [ eof
