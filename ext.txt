@@ -1,0 +1,431 @@
+
+   5.3. Extended query syntax
+   [59]Prev                   Chapter 5. Searching                   [60]Next
+
+   --------------------------------------------------------------------------
+
+   The following special operators and modifiers can be used when using the
+   extended matching mode:
+
+     o operator OR:
+
+ hello | world
+
+     o operator MAYBE (introduced in verion 2.2.3-beta):
+
+ hello MAYBE world
+
+     o operator NOT:
+
+ hello -world
+ hello !world
+
+     o field search operator:
+
+ @title hello @body world
+
+     o field position limit modifier (introduced in version 0.9.9-rc1):
+
+ @body[50] hello
+
+     o multiple-field search operator:
+
+ @(title,body) hello world
+
+     o ignore field search operator (will ignore any matches of 'hello world'
+       from field 'title'):
+
+ @!title hello world
+
+     o ignore multiple-field search operator (if we have fields title,
+       subject and body then @!(title) is equivalent to @(subject,body)):
+
+ @!(title,body) hello world
+
+     o all-field search operator:
+
+ @* hello
+
+     o phrase search operator:
+
+ "hello world"
+
+     o proximity search operator:
+
+ "hello world"~10
+
+     o quorum matching operator:
+
+ "the world is a wonderful place"/3
+
+     o strict order operator (aka operator "before"):
+
+ aaa << bbb << ccc
+
+     o exact form modifier (introduced in version 0.9.9-rc1):
+
+ raining =cats and =dogs
+
+     o field-start and field-end modifier (introduced in version 0.9.9-rc2):
+
+ ^hello world$
+
+     o keyword IDF boost modifier (introduced in version 2.2.3-beta):
+
+ boosted^1.234 boostedfieldend$^1.234
+
+     o NEAR, generalized proximity operator (introduced in version
+       2.0.1-beta):
+
+ hello NEAR/3 world NEAR/4 "my test"
+
+     o SENTENCE operator (introduced in version 2.0.1-beta):
+
+ all SENTENCE words SENTENCE "in one sentence"
+
+     o PARAGRAPH operator (introduced in version 2.0.1-beta):
+
+ "Bill Gates" PARAGRAPH "Steve Jobs"
+
+     o ZONE limit operator:
+
+ ZONE:(h3,h4)
+
+       only in these titles
+
+     o ZONESPAN limit operator:
+
+ ZONESPAN:(h2)
+
+       only in a (single) title
+
+   Here's an example query that uses some of these operators:
+
+   Example 5.2. Extended matching mode: query example
+
+ "hello world" @title "example program"~5 @body python -(php|perl) @* code
+
+   The full meaning of this search is:
+
+     o Find the words 'hello' and 'world' adjacently in any field in a
+       document;
+
+     o Additionally, the same document must also contain the words 'example'
+       and 'program' in the title field, with up to, but not including, 5
+       words between the words in question; (E.g. "example PHP program" would
+       be matched however "example script to introduce outside data into the
+       correct context for your program" would not because two terms have 5
+       or more words between them)
+
+     o Additionally, the same document must contain the word 'python' in the
+       body field, but not contain either 'php' or 'perl';
+
+     o Additionally, the same document must contain the word 'code' in any
+       field.
+
+   There always is implicit AND operator, so "hello world" means that both
+   "hello" and "world" must be present in matching document.
+
+   OR operator precedence is higher than AND, so "looking for cat | dog |
+   mouse" means "looking for ( cat | dog | mouse )" and not "(looking for
+   cat) | dog | mouse".
+
+   Field limit operator limits subsequent searching to a given field.
+   Normally, query will fail with an error message if given field name does
+   not exist in the searched index. However, that can be suppressed by
+   specifying "@@relaxed" option at the very beginning of the query:
+
+ @@relaxed @nosuchfield my query
+
+   This can be helpful when searching through heterogeneous indexes with
+   different schemas.
+
+   Field position limit, introduced in version 0.9.9-rc1, additionally
+   restricts the searching to first N position within given field (or
+   fields). For example, "@body[50] hello" will not match the documents where
+   the keyword 'hello' occurs at position 51 and below in the body.
+
+   Proximity distance is specified in words, adjusted for word count, and
+   applies to all words within quotes. For instance, "cat dog mouse"~5 query
+   means that there must be less than 8-word span which contains all 3 words,
+   ie. "CAT aaa bbb ccc DOG eee fff MOUSE" document will not match this
+   query, because this span is exactly 8 words long.
+
+   Quorum matching operator introduces a kind of fuzzy matching. It will only
+   match those documents that pass a given threshold of given words. The
+   example above ("the world is a wonderful place"/3) will match all
+   documents that have at least 3 of the 6 specified words. Operator is
+   limited to 255 keywords. Instead of an absolute number, you can also
+   specify a number between 0.0 and 1.0 (standing for 0% and 100%), and
+   Sphinx will match only documents with at least the specified percentage of
+   given words. The same example above could also have been written "the
+   world is a wonderful place"/0.5 and it would match documents with at least
+   50% of the 6 words.
+
+   Strict order operator (aka operator "before"), introduced in version
+   0.9.9-rc2, will match the document only if its argument keywords occur in
+   the document exactly in the query order. For instance, "black << cat"
+   query (without quotes) will match the document "black and white cat" but
+   not the "that cat was black" document. Order operator has the lowest
+   priority. It can be applied both to just keywords and more complex
+   expressions, ie. this is a valid query:
+
+ (bag of words) << "exact phrase" << red|green|blue
+
+   Exact form keyword modifier, introduced in version 0.9.9-rc1, will match
+   the document only if the keyword occurred in exactly the specified form.
+   The default behavior is to match the document if the stemmed keyword
+   matches. For instance, "runs" query will match both the document that
+   contains "runs" and the document that contains "running", because both
+   forms stem to just "run" - while "=runs" query will only match the first
+   document. Exact form operator requires [61]index_exact_words option to be
+   enabled. This is a modifier that affects the keyword and thus can be used
+   within operators such as phrase, proximity, and quorum operators. Starting
+   with 2.2.2-beta, it is possible to apply an exact form modifier to the
+   phrase operator. It's really just syntax sugar - it adds an exact form
+   modifier to all terms contained within the phrase.
+
+ ="exact phrase"
+
+   Field-start and field-end keyword modifiers, introduced in version
+   0.9.9-rc2, will make the keyword match only if it occurred at the very
+   start or the very end of a fulltext field, respectively. For instance, the
+   query "^hello world$" (with quotes and thus combining phrase operator and
+   start/end modifiers) will only match documents that contain at least one
+   field that has exactly these two keywords.
+
+   Starting with 0.9.9-rc1, arbitrarily nested brackets and negations are
+   allowed. However, the query must be possible to compute without involving
+   an implicit list of all documents:
+
+ // correct query
+ aaa -(bbb -(ccc ddd))
+
+ // queries that are non-computable
+ -aaa
+ aaa | -bbb
+
+   Starting with 2.2.2-beta, the phrase search operator may include a 'match
+   any term' modifier. Terms within the phrase operator are position
+   significant. When the 'match any term' modifier is implemented, the
+   position of the subsequent terms from that phrase query will be shifted.
+   Therefore, 'match any' has no impact on search performance.
+
+ "exact * phrase * * for terms"
+
+   NEAR operator, added in 2.0.1-beta, is a generalized version of a
+   proximity operator. The syntax is NEAR/N, it is case-sensitive, and no
+   spaces are allowed between the NEAR keyword, the slash sign, and the
+   distance value.
+
+   The original proximity operator only worked on sets of keywords. NEAR is
+   more generic and can accept arbitrary subexpressions as its two arguments,
+   matching the document when both subexpressions are found within N words of
+   each other, no matter in which order. NEAR is left associative and has the
+   same (lowest) precedence as BEFORE.
+
+   You should also note how a (one NEAR/7 two NEAR/7 three) query using NEAR
+   is not really equivalent to a ("one two three"~7) one using keyword
+   proximity operator. The difference here is that the proximity operator
+   allows for up to 6 non-matching words between all the 3 matching words,
+   but the version with NEAR is less restrictive: it would allow for up to 6
+   words between 'one' and 'two' and then for up to 6 more between that
+   two-word matching and a 'three' keyword.
+
+   SENTENCE and PARAGRAPH operators, added in 2.0.1-beta, matches the
+   document when both its arguments are within the same sentence or the same
+   paragraph of text, respectively. The arguments can be either keywords, or
+   phrases, or the instances of the same operator. Here are a few examples:
+
+ one SENTENCE two
+ one SENTENCE "two three"
+ one SENTENCE "two three" SENTENCE four
+
+   The order of the arguments within the sentence or paragraph does not
+   matter. These operators only work on indexes built with [62]index_sp
+   (sentence and paragraph indexing feature) enabled, and revert to a mere
+   AND otherwise. Refer to the index_sp directive documentation for the notes
+   on what's considered a sentence and a paragraph.
+
+   ZONE limit operator, added in 2.0.1-beta, is quite similar to field limit
+   operator, but restricts matching to a given in-field zone or a list of
+   zones. Note that the subsequent subexpressions are not required to match
+   in a single contiguous span of a given zone, and may match in multiple
+   spans. For instance, (ZONE:th hello world) query will match this example
+   document:
+
+ <th>Table 1. Local awareness of Hello Kitty brand.</th>
+ .. some table data goes here ..
+ <th>Table 2. World-wide brand awareness.</th>
+
+   ZONE operator affects the query until the next field or ZONE limit
+   operator, or the closing parenthesis. It only works on the indexes built
+   with zones support (see [63]Section 12.2.9, "index_zones") and will be
+   ignored otherwise.
+
+   ZONESPAN limit operator, added in 2.1.1-beta, is similar to the ZONE
+   operator, but requires the match to occur in a single contiguous span. In
+   the example above, (ZONESPAN:th hello world)> would not match the
+   document, since "hello" and "world" do not occur within the same span.
+
+   MAYBE operator was added in 2.2.3-beta. It works much like | operator but
+   doesn't return documents which match only right subtree expression.
+
+   --------------------------------------------------------------------------
+
+   [64]Prev                          [65]Up                          [66]Next
+   5.2. Boolean query syntax        [67]Home      5.4. Search results ranking
+
+      News
+
+     * [68]Blog
+     * [69]Mailing list
+     * [70]Rss
+
+      Downloads
+
+     * [71]Release
+     * [72]Beta
+     * [73]Development/Git
+     * [74]Dictionaries
+     * [75]Archive
+
+      Services
+
+     * [76]Enterprise Support
+     * [77]Package Matrix
+     * [78]Consulting
+     * [79]Development
+     * [80]Embedding
+     * [81]Training
+     * [82]Sphinx Tools
+
+      Community
+
+     * [83]Forum
+     * [84]Wiki
+     * [85]Bugtracker
+     * [86]Open Projects
+     * [87]Plugins
+
+      Resources
+
+     * [88]Documentation
+     * [89]Case-Studies
+     * [90]Powered by Sphinx
+     * [91]Blog
+     * [92]Newsletter
+
+      About
+
+     * [93]Sphinx
+     * [94]Company
+     * [95]Contact
+     * [96]Careers
+
+   Copyright (c) 2001-2016, Sphinx Technologies Inc.
+
+References
+
+   Visible links
+   1. file:///
+   2. file:///
+   3. file:///about/contact/#contacts
+   5. Chat via Skype
+	file:///dev/skype:sphinxsearch?chat
+   6. RSS
+	file:///blog/feed/rss/
+   7. Twitter
+	http://twitter.com/sphinxsearch
+   8. LinkedIn
+	http://www.linkedin.com/companies/sphinx-technologies
+   9. Vkontakte
+	http://vkontakte.ru/club20032698
+  10. file://plus.google.com/113485961989931426612?prsrc=3
+  11. file://plus.google.com/113485961989931426612?prsrc=3
+  12. http://www.facebook.com/SphinxSearchServer
+  13. http://www.facebook.com/SphinxSearchServer
+  14. file:///downloads/
+  15. file:///downloads/release/
+  16. file:///downloads/beta/
+  17. file:///downloads/#svn
+  18. file:///downloads/dicts
+  19. file:///downloads/archive/
+  20. file:///services/
+  21. file:///services/support/
+  22. file:///services/packages/
+  23. file:///services/consulting/
+  24. file:///services/development/
+  25. file:///services/embedding/
+  26. file:///services/training/
+  27. https://tools.sphinxsearch.com/
+  28. file:///community/
+  29. file:///forum/
+  30. file:///wiki/
+  31. file:///bugs/
+  32. file:///community/projects/
+  33. file:///wiki/doku.php?id=third_party
+  34. file:///docs/
+  35. file:///docs/
+  36. file:///info/studies/
+  37. file:///info/powered/
+  38. file:///blog/
+  39. file:///news/newsletter/
+  40. file:///partners/
+  41. file:///partners/quartsoft/
+  42. file:///partners/flying_and_thinking_sphinx/
+  43. file:///partners/ivinco/
+  44. file:///partners/monty_program/
+  45. file:///partners/percona/
+  46. file:///partners/skysql/
+  47. file:///about/sphinx/
+  48. file:///about/company/
+  49. file:///about/contact/
+  50. file:///about/careers/
+  53. file:///
+  54. file:///docs/
+  55. file:///docs/
+  56. file:///info/studies/
+  57. file:///info/powered/
+  58. file:///info/buttons/
+  59. file:///dev/boolean-syntax.html
+  60. file:///dev/weighting.html
+  61. 12.2.42.index_exact_words
+	file:///dev/conf-index-exact-words.html
+  62. 12.2.8.index_sp
+	file:///dev/conf-index-sp.html
+  63. 12.2.9.index_zones
+	file:///dev/conf-index-zones.html
+  64. file:///dev/boolean-syntax.html
+  65. file:///dev/searching.html
+  66. file:///dev/weighting.html
+  67. file:///dev/index.html
+  68. file:///blog/
+  69. file:///news/maillist/
+  70. file:///blog/feed/rss/
+  71. file:///downloads/release/
+  72. file:///downloads/beta/
+  73. file:///downloads/#git
+  74. file:///downloads/dicts
+  75. file:///downloads/archive/
+  76. file:///services/support/
+  77. file:///services/packages/
+  78. file:///services/consulting/
+  79. file:///services/development/
+  80. file:///services/embedding/
+  81. file:///services/training/
+  82. https://tools.sphinxsearch.com/
+  83. file:///forum/
+  84. file:///wiki/
+  85. file:///bugs/
+  86. file:///community/projects/
+  87. file:///wiki/doku.php?id=third_party
+  88. file:///docs/
+  89. file:///info/studies/
+  90. file:///info/powered/
+  91. file:///blog/
+  92. file:///news/newsletter/
+  93. file:///about/sphinx/
+  94. file:///about/company/
+  95. file:///about/contact/
+  96. file:///about/careers/
