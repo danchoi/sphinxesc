@@ -41,7 +41,7 @@ made more configurable later.
 ## Testing
 
 
-The command line executable sphinxesc-parse can be used to test the expression parser 
+The command line executable sphinxesc can be used to test the expression parser 
 and escaping of the input to the final sphinx search expression.
 
 ```
