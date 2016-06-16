@@ -42,8 +42,9 @@ It does not parse more advanced Sphinx query expressions such as `NEAR/n`,
 quorum, etc., nor does it recognize arbitrary `@field` expressions. All
 non-alpha-numeric characters are converted into whitespace or filtered out
 unless they contribute to an `& (AND)`, `| (OR)` or `@tag_list` field search
-expression. Non-alphanumeric syntax that does not contribute into
-these specific expressions is stripped out.
+expression. Non-alphanumeric syntax that does not contribute into these
+specific expressions is prevented from being parsed or mis-parsed by the Sphinx
+query parser.
 
 Obviously these rules are quite domain specific. The rules can be
 made more configurable later.
