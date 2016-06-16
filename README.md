@@ -30,7 +30,7 @@ $ sphinxesc -p "test OR hello"
 Or (Literal "test") (Literal "hello")
 ```
 
-There is a suit of Bash-based regression tests in `tests.txt`, where the input
+There is a suite of Bash-based regression tests in `tests.txt`, where the input
 is on the left, followed by `::` surrounded by any whitespace, followed by the
 expected escaped output result. To run the tests, execute the script
 `./test.sh`
