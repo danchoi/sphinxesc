@@ -51,7 +51,7 @@ test | hello
 # -p option shows the parsing result
 
 $ sphinxesc -p "test OR hello"
-Or (Literal "test") (Literal "hello")
+AndOrExpr Or (Literal "test") (Literal "Hello\n")
 ```
 
 There is a suite of Bash-based regression tests in `tests.txt`, where the input
