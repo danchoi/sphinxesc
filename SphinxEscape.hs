@@ -11,8 +11,8 @@ escapeSphinxQueryString :: String -> String
 escapeSphinxQueryString s = expressionToString . parseQuery $ s
 
 
--- Just a simplified syntax tree. Besides this, all other input has it's
--- non-alphanum characters stripped, including double and single quotes and
+-- Just a simplified syntax tree. Besides this, all other input has its
+-- non-alphanumeric characters stripped, including double and single quotes and
 -- parentheses
 
 data Expression = 
