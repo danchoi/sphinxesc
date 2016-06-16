@@ -4,6 +4,7 @@ module SphinxEscape where
 import Control.Applicative
 import Data.Functor.Identity (Identity )
 import Text.Parsec hiding (many, (<|>)) 
+import Data.Char
  
 -- Just a simplified syntax tree. Besides this, all other input has it's
 -- non-alphanum characters stripped, including double and single quotes and
@@ -23,6 +24,23 @@ parseQuery  inp =
   case Text.Parsec.parse expression "" inp of
     Left x -> error $ "parser failed: " ++ show x
     Right xs -> xs
+
+-- escapes expression to string to pass to sphinx
+expressionToString :: Expression -> String
+expressionToString (TagFieldSearch s) = "@tag_list " ++ escapeString s
+expressionToString (Literal s) = escapeString s
+expressionToString (AndOrExpr And a b) = expressionToString a ++ " & " ++ expressionToString b
+expressionToString (AndOrExpr Or a b) = expressionToString a ++ " | " ++ expressionToString b
+
+-- removes all non-alphanumerics from literal strings that could be parsed
+-- mistakenly as Sphinx Extended Query operators
+escapeString :: String -> String
+escapeString s = map (stripAlphaNum) s
+
+stripAlphaNum :: Char -> Char
+stripAlphaNum s | isAlphaNum s = s
+                | otherwise = ' '
+
 
 type Parser' = ParsecT String () Identity 
 
@@ -75,8 +93,6 @@ escQuery = undefined
 
 -- http://sphinxsearch.com/docs/latest/extended-syntax.html
 
-type Pos = Int
-type Proximity = Int
 
 
 {-
