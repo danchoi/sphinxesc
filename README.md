@@ -5,6 +5,7 @@ mis-parsed into invalid Sphinx Extended Query Expressions.
 
 The module provides a function 
 
+    module SphinxEscape where
     escapeSphinxQueryString :: String -> String
 
 that sanitizes the Sphinx query expression in a way that can be safely submitted to the Sphinx API. 
