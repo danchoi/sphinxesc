@@ -91,6 +91,12 @@ hello &                       hello                         hello               
 & hello &                     hello                         hello                         PASS      
 & & hello &                   hello                         hello                         PASS      
 | | hello |                   hello                         hello                         PASS      
+"hello" hello                 hello  hello                  hello  hello                  PASS      
+hello" hello                  hello  hello                  hello  hello                  PASS      
+hello' hello                  hello  hello                  hello  hello                  PASS      
+hello' @tag_list fox          hello   @tag_list fox         hello   @tag_list fox         PASS      
+hello' @tag_list fox &        hello   @tag_list fox         hello   @tag_list fox         PASS      
+                                                                                          PASS      
 ```
 
 ## Future directions
