@@ -4,11 +4,12 @@ import Control.Applicative
 import Data.Functor.Identity (Identity )
 import Text.Parsec hiding (many, (<|>)) 
 import Data.Char
+import Data.List
  
 
 -- Main function
 escapeSphinxQueryString :: String -> String
-escapeSphinxQueryString s = expressionToString . parseQuery $ s
+escapeSphinxQueryString s = intercalate " " . map expressionToString . parseQuery $ s
 
 
 -- Just a simplified syntax tree. Besides this, all other input has its
@@ -24,9 +25,9 @@ data Expression =
 data Conj = And | Or
   deriving Show
 
-parseQuery :: String -> Expression
+parseQuery :: String -> [Expression]
 parseQuery  inp =
-  case Text.Parsec.parse expression "" inp of
+  case Text.Parsec.parse (many1 expression) "" inp of
     Left x -> error $ "parser failed: " ++ show x
     Right xs -> xs
 
@@ -62,6 +63,13 @@ stripAlphaNum s | isAlphaNum s = s
 
 
 type Parser' = ParsecT String () Identity 
+
+-- | can be literal or tag field or nothing, followed an expression
+topLevelExpression :: Parser' [Expression]
+topLevelExpression = do
+    a <- option [] ((:[]) <$> (tagField <|> literal))
+    xs <- many expression
+    return $ a ++ xs
 
 
 expression :: Parser' Expression
@@ -99,13 +107,18 @@ mkConjExpr xs t =
 
 
 literalStop :: Parser' ()
-literalStop = (choice [ eof
-  , lookAhead (tagField >> return ()) 
+literalStop = (choice [ 
+    lookAhead (tagField >> return ()) 
   , lookAhead (conjExpr >> return ())
+  , eof
   ])
   <?> "literalStop"
 
 literal :: Parser' Expression
-literal = Literal <$> manyTill anyChar (try literalStop)
+literal = do
+    a <- anyChar
+    notFollowedBy literalStop
+    xs <- manyTill anyChar (try literalStop)
+    return . Literal $ a:xs
 
 
