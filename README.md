@@ -99,6 +99,8 @@ hello' @tag_list fox &        hello   @tag_list fox         hello   @tag_list fo
                                                                                           PASS      
 ```
 
+(The last case is hard to see, but the input is a blank string "" and the output is a blank string "".)
+
 ## Future directions
 
 The escaping function can be made more configurable. The parser and AST data
