@@ -90,6 +90,9 @@ hello AND 7/11                hello & 7 11                  hello & 7 11        
 hello & @other_field AND      hello &  other field AND      hello &  other field AND      PASS      
 hello &                       hello                         hello                         PASS      
 & hello &                     hello                         hello                         PASS      
+& & hello &                   hello                         hello                         PASS      
+| | hello |                   hello                         hello                         PASS      
+                                                                                          PASS      
 ```
 
 

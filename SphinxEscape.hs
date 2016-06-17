@@ -34,13 +34,27 @@ parseQuery  inp =
 expressionToString :: Expression -> String
 expressionToString (TagFieldSearch s) = "@tag_list" ++ escapeString s
 expressionToString (Literal s) = escapeString s
-expressionToString (AndOrExpr And a b) = expressionToString a ++ " & " ++ expressionToString b
-expressionToString (AndOrExpr Or a b) = expressionToString a ++ " | " ++ expressionToString b
+expressionToString (AndOrExpr c a b) = 
+    let a' = expressionToString a 
+        b' = expressionToString b
+        c' = conjToString c 
+    -- if either a' or b' is just whitespace, just choose one or the other
+    in case (all isSpace a', all isSpace b') of
+        (True, False) -> b'
+        (False, True) -> a'
+        (False, False) -> a' ++ c' ++ b'
+        _  -> ""
+      
+
+conjToString :: Conj -> String
+conjToString And = " & "
+conjToString Or = " | "
 
 -- removes all non-alphanumerics from literal strings that could be parsed
 -- mistakenly as Sphinx Extended Query operators
 escapeString :: String -> String
 escapeString s = map (stripAlphaNum) s
+
 
 stripAlphaNum :: Char -> Char
 stripAlphaNum s | isAlphaNum s = s
