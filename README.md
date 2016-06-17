@@ -72,7 +72,7 @@ expected escaped output result. To run the tests, execute the script
 `./test.sh`
 
 
-```bash
+```
 ./test.sh
 
 INPUT                         EXPECTED                      RESULT                        PASS      
