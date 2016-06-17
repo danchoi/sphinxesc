@@ -96,8 +96,8 @@ hello &                       hello                         hello               
 ## Future directions
 
 The escaping function can be made more configurable. The parser and AST data
-structure can also be made more sophisticated, covering more of the Sphinx
-Extended Query syntax. 
+structure can also be made more sophisticated, so that the AST can cover more
+of the Sphinx Extended Query syntax. 
 
 ## Reference
 
