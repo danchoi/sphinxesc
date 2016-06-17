@@ -18,4 +18,4 @@ hello" hello               :: hello  hello
 hello' hello               :: hello  hello
 hello' @tag_list fox       :: hello   @tag_list fox
 hello' @tag_list fox &     :: hello   @tag_list fox
-
+:: # blank string case

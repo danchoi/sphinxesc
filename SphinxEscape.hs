@@ -27,7 +27,7 @@ data Conj = And | Or
 
 parseQuery :: String -> [Expression]
 parseQuery  inp =
-  case Text.Parsec.parse (many1 expression) "" inp of
+  case Text.Parsec.parse (many expression) "" inp of
     Left x -> error $ "parser failed: " ++ show x
     Right xs -> xs
 
