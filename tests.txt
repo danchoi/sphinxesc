@@ -5,16 +5,9 @@ hello or 7/11              :: hello | 7 11
 hello | 7/11               :: hello | 7 11
 hello AND 7/11             :: hello & 7 11
 @tag_list fox tango 7/11   :: @tag_list fox tango 7 11
-
-# multi field search expression with one field
-@(tag_list) fox tango 7/11 :: @tag_list fox tango 7 11
-
-# trailing AND should not convert to &, which causes Sphinx parse error
-@(tag_list) AND            :: @tag_list AND
-
-# right now, only 'tag_field' is parsed into a field search expression
-@other_field AND           :: other field AND
-
+@(tag_list) fox tango 7/11 :: @tag_list fox tango 7 11  # multi field search expression with one field
+@(tag_list) AND            :: @tag_list AND             # trailing AND should not convert to &, which causes Sphinx parse error
+@other_field AND           :: other field AND           # right now, only 'tag_field' is parsed into a field search expression
 hello & @other_field AND   :: hello &  other field AND
 hello &                    :: hello
 & hello &                  :: hello
