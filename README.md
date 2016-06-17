@@ -93,6 +93,11 @@ hello &                       hello                         hello               
 | | hello |                   hello                         hello                         PASS      
 ```
 
+## Future directions
+
+The escaping function can be made more configurable. The parser and AST data
+structure can also be made more sophisticated, covering more of the Sphinx
+Extended Query syntax. 
 
 ## Reference
 
