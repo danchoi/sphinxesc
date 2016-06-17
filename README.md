@@ -38,12 +38,11 @@ data Expression =
   deriving Show
 ```
 
-It does not parse more advanced Sphinx query expressions such as `NEAR/n`,
-quorum, etc., nor does it recognize arbitrary `@field` expressions. The only
-special expressions recognized are `& (AND)`, `| (OR)` and `@tag_list WORDS`.
-Non-alphanumeric syntax that does not contribute into these specific
-expressions is prevented from being parsed (or mis-parsed) by the Sphinx query
-parser and effectively turned into whitespace and valid literal search terms.
+The escaping does not parse more advanced Sphinx query expressions such as
+`NEAR/n`, quorum, etc., nor does it recognize arbitrary `@field` expressions.
+The only special expressions recognized are `& (AND)`, `| (OR)` and `@tag_list
+WORDS`.  Non-alphanumeric characters that do not form part of these specific
+expressions are simply turned into whitespace. 
 
 See the **Testing** section below for examples of conversions.
 
