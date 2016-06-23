@@ -34,15 +34,17 @@ simplified abtract syntax tree. The abstract syntax tree it builds is:
 data Expression = 
         TagFieldSearch String 
       | Literal String
+      | Phrase String
       | AndOrExpr Conj Expression Expression 
   deriving Show
+
 ```
 
 The escaping does not parse more advanced Sphinx query expressions such as
 `NEAR/n`, quorum, etc., nor does it recognize arbitrary `@field` expressions.
 The only special expressions recognized are `& (AND)`, `| (OR)` and `@tag_list
-WORDS`.  Non-alphanumeric characters that do not form part of these specific
-expressions are simply turned into whitespace. 
+WORDS`.  Except for quoted phrases, non-alphanumeric characters that do not
+form part of these specific expressions are simply turned into whitespace. 
 
 See the **Testing** section below for examples of conversions.
 
@@ -71,6 +73,9 @@ is on the left, followed by `::` surrounded by any whitespace, followed by the
 expected escaped output result. To run the tests, execute the script
 `./test.sh`
 
+
+**NOTE** This test output may be outdated. Please look at the `tests.txt` for 
+the current tests.
 
 ```
 ./test.sh
