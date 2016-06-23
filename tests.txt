@@ -13,7 +13,9 @@ hello &                    :: hello
 & hello &                  :: hello
 & & hello &                :: hello
 | | hello |                :: hello
-"hello" hello              :: hello  hello
+"hello" hello              :: "hello"  hello           # literal
+"hello" @tag_list fox      :: "hello"   @tag_list fox
+@tag_list tea "hello fox"  :: @tag_list tea  "hello fox" 
 hello" hello               :: hello  hello
 hello' hello               :: hello  hello
 hello' @tag_list fox       :: hello   @tag_list fox

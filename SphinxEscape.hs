@@ -19,6 +19,7 @@ escapeSphinxQueryString s = intercalate " " . map expressionToString . parseQuer
 data Expression = 
         TagFieldSearch String 
       | Literal String
+      | Phrase String
       | AndOrExpr Conj Expression Expression 
   deriving Show
 
@@ -35,6 +36,7 @@ parseQuery  inp =
 expressionToString :: Expression -> String
 expressionToString (TagFieldSearch s) = "@tag_list" ++ escapeString s
 expressionToString (Literal s) = escapeString s
+expressionToString (Phrase s) = "\"" ++ s ++ "\"" -- no need to escape the contents
 expressionToString (AndOrExpr c a b) = 
     let a' = expressionToString a 
         b' = expressionToString b
@@ -45,7 +47,6 @@ expressionToString (AndOrExpr c a b) =
         (False, True) -> a'
         (False, False) -> a' ++ c' ++ b'
         _  -> ""
-      
 
 conjToString :: Conj -> String
 conjToString And = " & "
@@ -55,7 +56,6 @@ conjToString Or = " | "
 -- mistakenly as Sphinx Extended Query operators
 escapeString :: String -> String
 escapeString s = map (stripAlphaNum) s
-
 
 stripAlphaNum :: Char -> Char
 stripAlphaNum s | isAlphaNum s = s
@@ -73,7 +73,7 @@ topLevelExpression = do
 
 
 expression :: Parser' Expression
-expression = (try andOrExpr) <|> try tagField <|> literal 
+expression = (try andOrExpr) <|> try tagField <|> try phrase <|> literal 
 
 tagField :: Parser' Expression
 tagField = do
@@ -85,7 +85,7 @@ tagField = do
 
 andOrExpr :: Parser' Expression
 andOrExpr = do 
-    a <- (try tagField <|> literal)
+    a <- (try tagField <|> try phrase <|> literal)
     x <- try conjExpr
     b <- expression  -- recursion
     return $ AndOrExpr x a b
@@ -105,11 +105,17 @@ mkConjExpr xs t =
     try (many1 space >> choice (map (string . (++" ")) xs))
     >> return t
 
+phrase :: Parser' Expression
+phrase = do
+    _ <- char '"'
+    xs <- manyTill anyChar (char '"')
+    return . Phrase $ xs
 
 literalStop :: Parser' ()
 literalStop = (choice [ 
     lookAhead (tagField >> return ()) 
   , lookAhead (conjExpr >> return ())
+  , lookAhead (phrase >> return ())
   , eof
   ])
   <?> "literalStop"
