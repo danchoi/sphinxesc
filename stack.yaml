@@ -1,3 +1,0 @@
-resolver: lts-0.99 # 3.0
-extra-deps:
-- hxt-xpath-9.1.2.2
